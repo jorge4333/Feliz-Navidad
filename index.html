@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz Navidad 🎄</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="tree-container" id="tree" tabindex="0" aria-controls="greeting" aria-expanded="false" role="button">
+        <svg width="300" height="500" viewBox="-20 -40 540 580" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <mask id="treePathMask">
+                    <path class="treePathMask" fill="none" stroke-width="18"
+                    stroke="#FFF" d="M252.9,447.9c0,0-30.8-21.6,33.9-44.7c64.7-23.1,46.2-37,33.9-41.6c-12.3-4.6-59.3-11.6-42.4-28.5s114-52.4,81.7-66.2c-32.4-13.9-58.5-10.8-35.4-29.3s66.2-101.7,70.9-115.6c4.4-13.2,16.9-18.5,24.7,0c7.7,18.5,44.7,100.1,67.8,115.6c23.1,15.4-10.8,21.6-26.2,24.7c-15.4,3.1-20,33.9,33.9,49.3c53.9,15.4,47.8,40.1,27.7,44.7c-20,4.6-63.2,4.6-27.7,32.4s98.6,21.6,61.6,60.1" />
+                </mask>
+                <mask id="treeBottomMask">
+                    <path class="treeBottomMask" stroke="#FFF" stroke-width="8" d="M207.5,484.1c0,0,58.5-43.1,211.1-3.1s191-16.9,191-16.9" />
+                </mask>
+            </defs>
+
+            <!-- Visible shapes: tree and trunk (hidden until reveal) -->
+            <g class="tree-shape" aria-hidden="true">
+                <path d="M252.9,447.9c0,0-30.8-21.6,33.9-44.7c64.7-23.1,46.2-37,33.9-41.6c-12.3-4.6-59.3-11.6-42.4-28.5s114-52.4,81.7-66.2c-32.4-13.9-58.5-10.8-35.4-29.3s66.2-101.7,70.9-115.6c4.4-13.2,16.9-18.5,24.7,0c7.7,18.5,44.7,100.1,67.8,115.6c23.1,15.4-10.8,21.6-26.2,24.7c-15.4,3.1-20,33.9,33.9,49.3c53.9,15.4,47.8,40.1,27.7,44.7c-20,4.6-63.2,4.6-27.7,32.4s98.6,21.6,61.6,60.1" fill="#0b8a2b" stroke="#05621a" stroke-width="2" />
+                <path d="M207.5,484.1c0,0,58.5-43.1,211.1-3.1s191-16.9,191-16.9" fill="#7b4b2b" stroke="#5a3a2b" stroke-width="2" />
+                <!-- Small decorative star at the top of the tree (starts hidden; will be revealed after its trace) -->
+                <path id="starShape" d="M407 40 L414 60 L437 60 L420 75 L427 95 L407 82 L387 95 L394 75 L377 60 L401 60 Z" fill="#ffd166" stroke="#b8860b" stroke-width="1" style="opacity:0; transition: opacity 180ms ease-in-out;" />
+            </g>
+
+            <!-- Outline paths used for the tracing light animation (visible during trace) -->
+            <g class="outline" aria-hidden="false">
+                <path id="treeOutline" class="trace" fill="none" stroke="#ffd166" stroke-width="6" d="M252.9,447.9c0,0-30.8-21.6,33.9-44.7c64.7-23.1,46.2-37,33.9-41.6c-12.3-4.6-59.3-11.6-42.4-28.5s114-52.4,81.7-66.2c-32.4-13.9-58.5-10.8-35.4-29.3s66.2-101.7,70.9-115.6c4.4-13.2,16.9-18.5,24.7,0c7.7,18.5,44.7,100.1,67.8,115.6c23.1,15.4-10.8,21.6-26.2,24.7c-15.4,3.1-20,33.9,33.9,49.3c53.9,15.4,47.8,40.1,27.7,44.7c-20,4.6-63.2,4.6-27.7,32.4s98.6,21.6,61.6,60.1" />
+                <path id="trunkOutline" class="trace" fill="none" stroke="#ffd166" stroke-width="4" d="M207.5,484.1c0,0,58.5-43.1,211.1-3.1s191-16.9,191-16.9" />
+                <!-- 4-point star outline at the top of the tree (traced like the rest) -->
+                <path id="starOutline" class="trace" fill="none" stroke="#ffd166" stroke-width="6" d="M407 40 L414 60 L437 60 L420 75 L427 95 L407 82 L387 95 L394 75 L377 60 L401 60 Z" />
+                <!-- Moving tracer (glowing dot) that simulates drawing -->
+                <circle id="tracer" class="tracer" r="6" fill="#ffd166" opacity="0" />
+            </g> 
+        </svg>
+        <div id="card" class="card">
+            <div id="envelope" class="envelope" role="button" tabindex="0" aria-expanded="false" aria-controls="cardMessage modalMessage" aria-label="Abrir carta (Enter)" title="Abrir carta"></div>
+            <div id="cardMessage" class="card-message" role="status" aria-live="polite" tabindex="-1" hidden>Mi reina, Yule, en esta Navidad mi único deseo no cabe debajo de un árbol. Lo que le pido al Señor de todo corazón es que nos permita caminar juntos por el resto de nuestras vidas. No hay mayor alegría para mí que saber que estamos unidos en un mismo propósito: amarnos y servirle a Dios de la mano. Eres mi cielo y mi mayor bendición; estoy inmensamente feliz de estar a tu lado. Te amo con todo mi corazón, hoy y para siempre.</div>
+        </div>
+    </div>
+
+    <!-- Modal overlay: centered box that covers 80% of the viewport, leaving margins visible -->
+    <div id="modalOverlay" class="modal-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+        <button class="modal-close" aria-label="Cerrar">&times;</button>
+        <div id="modalMessage" class="modal-message">
+          <h2 id="modalTitle">Para mi niña:</h2>
+            <p>Mi reina, Yule, en esta Navidad mi único deseo no cabe debajo de un árbol. Lo que le pido al Señor de todo corazón es que nos permita caminar juntos por el resto de nuestras vidas. No hay mayor alegría para mí que saber que estamos unidos en un mismo propósito: amarnos y servirle a Dios de la mano. Eres mi cielo y mi mayor bendición; estoy inmensamente feliz de estar a tu lado. Te amo con todo mi corazón, hoy y para siempre.</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

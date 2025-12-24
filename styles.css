@@ -1,0 +1,220 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    /* Festive blue background used by default now */
+    background: radial-gradient(circle at 20% 10%, #102030 0%, #071128 30%, #001025 60%), linear-gradient(180deg, #0b2346 0%, #0b3b6f 60%, #ffffff 100%);
+    color: #fff;
+    position: relative;
+} 
+
+.tree-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Mantener la misma Y; usar layout en columna para que el árbol quede encima de la carta y compartan la misma X */
+    /* desplazar más a la izquierda: aumentar el desplazamiento X negativo */
+    transform: translate(-75%, -60%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+}
+
+
+svg {
+  width: 300px;
+  height: auto;
+  max-width: 80vw;
+  transition: transform 200ms ease-in-out;
+  transform-origin: center;
+  overflow: visible;
+  display: block;
+} 
+.tree-container:hover svg,
+.tree-container:focus svg,
+.tree-container:focus-within svg {
+  transform: scale(1.08);
+}
+
+/* Card styles (aparece debajo del árbol) */
+.card {
+  opacity: 0;
+  transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
+  /* reset transform so position changes are obvious */
+  transform: translate(0, -10px);
+  text-align: center;
+  pointer-events: none;
+  margin: 0;
+  /* temporal debug outline to make the card easy to see */
+  outline: 2px dashed rgba(255, 0, 0, 0);
+}
+.card:not([hidden]) {
+  opacity: 1;
+  transform: translate(40%, 0);
+  pointer-events: auto;
+  /* spacing handled by container gap */
+}
+
+/* make the envelope more visible for debugging */
+.envelope {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08), 0 0 0 3px rgba(255,165,0,0.15) inset;
+}
+
+.envelope {
+  width: 200px;
+  height: 110px;
+  margin: 0 auto;
+  background: #ff2121;
+  border: 2px solid #ffffff;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 200ms ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  perspective: 700px; /* 3D perspective for flap */
+  -webkit-perspective: 700px;
+}
+.envelope::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 92%; /* slightly smaller to reveal the border */
+  background: #e7a8a8;
+  clip-path: polygon(2% 0, 98% 0, 50% 58%);
+  transform-origin: 50% 0%;
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08) inset;
+  z-index: 2;
+}
+/* triangle outline behind the flap to serve as a border */
+.envelope::after {
+  content: '';
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+  width: 0px;
+  height: 0px;
+  border-left: 100px solid transparent;
+  border-right: 100px solid transparent;
+  border-bottom: 60px solid #ffffff;
+  pointer-events: none;
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1);
+  z-index: 1;
+  transform-origin: 50% 0;
+}
+.envelope.open::before {
+  transform: rotateX(0deg);
+}
+.envelope.open::after {
+  transform: translateX(-50%) rotate(0deg) rotateX(0deg);
+}
+
+.card-message {
+  padding: 10px;
+  margin-top: 8px;
+  font-weight: 600;
+  color: #333;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+.card-message:not([hidden]) {
+  opacity: 1;
+}
+
+/* Trace animation styles */
+.trace {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px rgba(255,209,102,0.95));
+  pointer-events: none;
+  opacity: 1;
+  /* initial dash values will be set via JS */
+}
+
+.tracer {
+  transition: opacity 120ms ease-in-out, transform 120ms linear;
+  pointer-events: none;
+  filter: drop-shadow(0 0 12px rgba(255,209,102,0.95));
+  opacity: 0;
+}
+.tracer.visible {
+  opacity: 1;
+} 
+/* Tree is hidden until reveal */
+.tree-shape {
+  opacity: 0;
+  transition: opacity 500ms ease-in-out;
+}
+.tree-shape.revealed {
+  opacity: 1;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(#fff 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+/* Modal overlay and box (covers 80% of viewport leaving margins) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+}
+.modal-overlay[hidden] { display: none; }
+
+.modal {
+  background-image:url(Background.jpg);
+  color: #ffffff;
+  width: 80vw;
+  height: 80vh;
+  max-width: 1200px;
+  max-height: 900px;
+  border-radius: 10px;
+  box-shadow: 0 20px 40px rgba(255, 255, 255, 0.475);
+  padding: 28px;
+  overflow: auto;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 20px);
+  text-align: center;
+  font-size: 1.4rem;
+  padding: 8px 16px;
+}
+
+.modal h2 { margin: 0 0 12px 0; font-size: 2rem; }
+.modal p { margin: 0; font-size: 1.25rem; } 
