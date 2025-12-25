@@ -183,7 +183,13 @@ body::before {
 }
 
 .modal {
-  background-image:url(Background.jpg);
+  background-image: url("Background.jpg");
+
+  /* 🔥 estas 3 líneas corrigen todo */
+  background-size: cover;          /* ajusta la imagen al tamaño del modal */
+  background-repeat: no-repeat;    /* no repetir */
+  background-position: center;     /* centrada */
+
   color: #ffffff;
   width: 80vw;
   height: 80vh;
@@ -218,8 +224,12 @@ body::before {
   padding: 8px 16px;
 }
 
-.modal h2 { margin: 0 0 12px 0; font-size: 2rem; }
-.modal p { margin: 0; font-size: 1.25rem; }
+.modal h2 {
+  margin: 0 0 12px 0;
+  font-size: 2rem;
+  color: #ffd166;   /* dorado suave */
+}
+.modal p { margin: 0; font-size: 1,6rem; }
 
 /* OVERLAY INICIAL */
 .intro-overlay {
@@ -274,4 +284,32 @@ body::before {
             drop-shadow(0 0 10px rgba(255, 255, 200, 0.4));
     transform: scale(1);
   }
+}
+
+.snowflake {
+  position: fixed;
+  top: -10px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  opacity: .9;
+
+  pointer-events: none;
+  z-index: 5;
+
+  animation: snowFall linear forwards;
+}
+
+@keyframes snowFall {
+  to {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+}
+
+.signature {
+  color: #ffb6c1;   /* rosado suave */
+  font-weight: 700;
 }

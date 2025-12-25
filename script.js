@@ -284,6 +284,11 @@ async function startExperience() {
     music.play().catch(() => {});
   }
 
+  // ❄️ inicia la nieve un poquito después del botón
+  setTimeout(() => {
+    startSnow();
+  }, 1200);
+
   await startTrace();
 }
 
@@ -296,3 +301,36 @@ if (startButton) {
 document.addEventListener('DOMContentLoaded', () => {
   // Esperamos el clic del usuario
 });
+
+/* ============================
+   ANIMACION — NIEVE
+============================ */
+
+let snowInterval = null;
+
+function createSnowflake() {
+  const snow = document.createElement("div");
+  snow.classList.add("snowflake");
+
+  // tamaño aleatorio
+  const size = Math.random() * 5 + 2;
+  snow.style.width = size + "px";
+  snow.style.height = size + "px";
+
+  // posición en pantalla
+  snow.style.left = Math.random() * 100 + "vw";
+
+  // duración de caída
+  const duration = Math.random() * 4 + 4;
+  snow.style.animationDuration = duration + "s";
+
+  document.body.appendChild(snow);
+
+  // eliminar cuando termina
+  setTimeout(() => snow.remove(), duration * 1000);
+}
+
+function startSnow() {
+  if (snowInterval) return;        // evita duplicados
+  snowInterval = setInterval(createSnowflake, 22);
+}
