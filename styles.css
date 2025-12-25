@@ -313,3 +313,28 @@ body::before {
   color: #ffb6c1;   /* rosado suave */
   font-weight: 700;
 }
+
+/* ⭐ Estrellas del fondo */
+#stars {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  opacity: .7;
+  animation: starTwinkle 2.5s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0% { opacity: .2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.6); }
+  100% { opacity: .2; transform: scale(1); }
+}

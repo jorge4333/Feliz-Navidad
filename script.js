@@ -334,3 +334,34 @@ function startSnow() {
   if (snowInterval) return;        // evita duplicados
   snowInterval = setInterval(createSnowflake, 22);
 }
+/* ============================
+   ⭐ ESTRELLAS DE FONDO
+============================ */
+
+function createStars() {
+  const container = document.getElementById("stars");
+  if (!container) return;
+
+  const total = 80;   // ← cambia este número si quieres MÁS o MENOS
+
+  for (let i = 0; i < total; i++) {
+    const star = document.createElement("div");
+    star.classList.add("star");
+
+    // posición aleatoria
+    star.style.top = Math.random() * 100 + "vh";
+    star.style.left = Math.random() * 100 + "vw";
+
+    // tamaño aleatorio
+    const size = Math.random() * 2 + 1;
+    star.style.width = size + "px";
+    star.style.height = size + "px";
+
+    // cada estrella brilla distinto
+    star.style.animationDelay = (Math.random() * 2) + "s";
+
+    container.appendChild(star);
+  }
+}
+
+createStars();
