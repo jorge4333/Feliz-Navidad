@@ -4,9 +4,18 @@ const envelope = document.getElementById('envelope');
 const cardMessage = document.getElementById('cardMessage');
 const modalOverlay = document.getElementById('modalOverlay');
 
+const music = document.getElementById('backgroundMusic');
+const introOverlay = document.getElementById('introOverlay');
+const startButton = document.getElementById('startButton');
+
+/* ============================
+   TARJETA
+============================ */
+
 function toggleCard() {
   if (!tree || !card) return;
   const hidden = card.hasAttribute('hidden');
+
   if (hidden) {
     card.removeAttribute('hidden');
     tree.setAttribute('aria-expanded', 'true');
@@ -23,17 +32,17 @@ function toggleCard() {
 }
 
 function toggleEnvelope() {
-  // resolve elements at call-time in case the DOM was replaced (tree cloning)
   const env = document.getElementById('envelope');
   const msg = document.getElementById('cardMessage');
   if (!env || !msg) return;
+
   const isOpen = env.classList.contains('open');
+
   if (!isOpen) {
     env.classList.add('open');
     env.setAttribute('aria-expanded', 'true');
     msg.removeAttribute('hidden');
 
-    // show modal overlay sized at 80% of viewport
     if (modalOverlay) {
       modalOverlay.removeAttribute('hidden');
       const dialog = modalOverlay.querySelector('.modal');
@@ -41,19 +50,18 @@ function toggleEnvelope() {
       document.body.style.overflow = 'hidden';
     }
 
-    // focus message for screen readers
     if (msg.tabIndex === -1) msg.focus();
   } else {
     closeModal();
   }
-} 
+}
 
 if (tree) {
   tree.addEventListener('click', (e) => {
-    // prevent clicks on envelope from toggling the card
     if (e.target.id === 'envelope' || e.target.closest('#envelope')) return;
     toggleCard();
   });
+
   tree.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
       e.preventDefault();
@@ -62,7 +70,6 @@ if (tree) {
   });
 }
 
-// Use event delegation so clicks/keys on the envelope work even after replacing the tree element
 document.addEventListener('click', (e) => {
   const env = e.target.closest && e.target.closest('#envelope');
   if (env) {
@@ -71,7 +78,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Keyboard handling: if the envelope is focused and Enter/Space is pressed
 document.addEventListener('keydown', (e) => {
   const activeEnv = document.activeElement && document.activeElement.id === 'envelope';
   if (activeEnv && (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) {
@@ -80,25 +86,43 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Modal functions and handlers
+/* ============================
+   MODAL
+============================ */
+
 function closeModal() {
   if (modalOverlay) modalOverlay.setAttribute('hidden', '');
+
   const env = document.getElementById('envelope');
   const msg = document.getElementById('cardMessage');
+
   if (env) {
     env.classList.remove('open');
     env.setAttribute('aria-expanded', 'false');
   }
+
   if (msg) msg.setAttribute('hidden', '');
   document.body.style.overflow = '';
 }
 
+// handlers del modal (X, clic fuera, Escape)
 if (modalOverlay) {
+
+  // clic fuera
   modalOverlay.addEventListener('click', (e) => {
     if (e.target === modalOverlay) closeModal();
   });
+
+  // botón X
   const modalClose = modalOverlay.querySelector('.modal-close');
-  if (modalClose) modalClose.addEventListener('click', (e) => { e.stopPropagation(); closeModal(); });
+  if (modalClose) {
+    modalClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeModal();
+    });
+  }
+
+  // Escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !modalOverlay.hasAttribute('hidden')) {
       closeModal();
@@ -106,8 +130,11 @@ if (modalOverlay) {
   });
 }
 
-// Trace animation and reveal logic
-let traceInProgress = true; 
+/* ============================
+   ANIMACIÓN DEL ÁRBOL
+============================ */
+
+let traceInProgress = true;
 
 function easeInOutCubic(t) {
   return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
@@ -121,6 +148,7 @@ function animatePath(path, duration, showTracer = true) {
 
     const tracerEl = document.getElementById('tracer');
     let start = null;
+
     if (showTracer && tracerEl) {
       tracerEl.classList.add('visible');
       tracerEl.style.opacity = '1';
@@ -130,7 +158,7 @@ function animatePath(path, duration, showTracer = true) {
       if (!start) start = ts;
       const elapsed = ts - start;
       let t = Math.min(1, elapsed / duration);
-      // small wobble in speed to simulate hand motion
+
       const wobble = Math.sin(elapsed / 180) * 0.01;
       const eased = Math.max(0, Math.min(1, easeInOutCubic(Math.min(1, t + wobble))));
       const offset = len * (1 - eased);
@@ -140,7 +168,6 @@ function animatePath(path, duration, showTracer = true) {
         const pos = path.getPointAtLength(len * eased);
         tracerEl.setAttribute('cx', pos.x);
         tracerEl.setAttribute('cy', pos.y);
-        // slight up and down movement to mimic hand
         const jx = Math.sin(elapsed / 120) * 0.6;
         tracerEl.setAttribute('transform', `translate(${jx}, ${-Math.abs(jx)})`);
       }
@@ -155,52 +182,56 @@ function animatePath(path, duration, showTracer = true) {
         resolve();
       }
     }
+
     requestAnimationFrame(step);
   });
-} 
+}
 
 async function startTrace() {
   const treeOutline = document.getElementById('treeOutline');
   const trunkOutline = document.getElementById('trunkOutline');
   const starOutline = document.getElementById('starOutline');
+
   if (!treeOutline && !trunkOutline && !starOutline) {
-    // fallback: reveal immediately
     const shape = document.querySelector('.tree-shape');
     if (shape) shape.classList.add('revealed');
     traceInProgress = false;
     return;
   }
-  // disable interactions until done
+
   traceInProgress = true;
-  // ensure outlines visible
+
   if (treeOutline) treeOutline.style.opacity = '1';
   if (trunkOutline) trunkOutline.style.opacity = '1';
   if (starOutline) starOutline.style.opacity = '1';
 
   if (treeOutline) await animatePath(treeOutline, 3500, true);
+
   if (starOutline) {
     await animatePath(starOutline, 900, true);
     const starShape = document.getElementById('starShape');
     if (starShape) starShape.style.opacity = '1';
   }
+
   if (trunkOutline) await animatePath(trunkOutline, 1200, true);
-  // small pause
+
   await new Promise((r) => setTimeout(r, 250));
 
   const shape = document.querySelector('.tree-shape');
   if (shape) shape.classList.add('revealed');
 
-  // keep outlines visible after tracing: ensure full stroke and maintain opacity
   if (treeOutline) {
     treeOutline.style.transition = 'stroke-dashoffset 700ms ease';
     treeOutline.style.strokeDashoffset = '0';
     treeOutline.style.opacity = '1';
   }
+
   if (trunkOutline) {
     trunkOutline.style.transition = 'stroke-dashoffset 500ms ease';
     trunkOutline.style.strokeDashoffset = '0';
     trunkOutline.style.opacity = '1';
   }
+
   if (starOutline) {
     starOutline.style.transition = 'stroke-dashoffset 400ms ease';
     starOutline.style.strokeDashoffset = '0';
@@ -210,17 +241,22 @@ async function startTrace() {
   traceInProgress = false;
 }
 
-// prevent clicks on the tree while tracing
+/* ============================
+   BLOQUEAR CLICS DURANTE TRACE
+============================ */
+
 if (tree) {
   const originalClickHandler = (e) => {
     if (traceInProgress) return;
     if (e.target.id === 'envelope' || e.target.closest('#envelope')) return;
     toggleCard();
   };
+
   tree.replaceWith(tree.cloneNode(true));
-  // reselect tree since we replaced it
   const newTree = document.getElementById('tree');
+
   newTree.addEventListener('click', originalClickHandler);
+
   newTree.addEventListener('keydown', (e) => {
     if (traceInProgress) return;
     if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
@@ -230,7 +266,33 @@ if (tree) {
   });
 }
 
-// start automatically
+/* ============================
+   EXPERIENCIA — ARRANCA CON EL BOTÓN
+============================ */
+
+async function startExperience() {
+  if (introOverlay) {
+    introOverlay.style.transition = 'opacity .3s ease';
+    introOverlay.style.opacity = '0';
+    setTimeout(() => {
+      introOverlay.style.display = 'none';
+    }, 300);
+  }
+
+  if (music) {
+    music.volume = 0.7;
+    music.play().catch(() => {});
+  }
+
+  await startTrace();
+}
+
+if (startButton) {
+  startButton.addEventListener('click', () => {
+    startExperience();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  startTrace();
+  // Esperamos el clic del usuario
 });
